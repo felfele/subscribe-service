@@ -4,23 +4,12 @@ const {auth} = require('google-auth-library');
 const express = require('express');
 const bodyParser = require('body-parser');
 
+const LISTEN_PORT = 3001
+
 const app = express();
 app.use(bodyParser.text({
     type: 'text/plain',
 }));
-
-const timestampToDateString = (timestamp, withTimezone = false) => {
-    const date = new Date(timestamp);
-    if (withTimezone) {
-        date.setTime(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
-    }
-    const prefix = (s, p) => ('' + p + s).substring(('' + s).length);
-    const prefix2 = (s) => prefix(s, '00');
-    const prefix3 = (s) => prefix(s, '000');
-    const datePart = `${date.getUTCFullYear()}-${prefix2(date.getUTCMonth() + 1)}-${prefix2(date.getUTCDate())}`;
-    const timePart = `${prefix2(date.getUTCHours())}:${prefix2(date.getUTCMinutes())}:${prefix2(date.getUTCSeconds())}.${prefix3(date.getUTCMilliseconds())}`;
-    return `${datePart} ${timePart}`;
-};
 
 app.post('/api/v1/subscribe', async (req, res) => {
     try {
@@ -34,7 +23,7 @@ app.post('/api/v1/subscribe', async (req, res) => {
     }
 });
 
-app.listen(3000, () => console.log('listening on port 3000'));
+app.listen(LISTEN_PORT, () => console.log('listening on port ' + LISTEN_PORT));
 
 async function authorize() {
   const keysEnvVar = process.env['CREDS'];
@@ -76,4 +65,17 @@ async function subscribe (email, date) {
   await sheets.spreadsheets.values.append(request)
   console.log('Append', {date, email})
 }
+
+const timestampToDateString = (timestamp, withTimezone = false) => {
+  const date = new Date(timestamp);
+  if (withTimezone) {
+      date.setTime(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
+  }
+  const prefix = (s, p) => ('' + p + s).substring(('' + s).length);
+  const prefix2 = (s) => prefix(s, '00');
+  const prefix3 = (s) => prefix(s, '000');
+  const datePart = `${date.getUTCFullYear()}-${prefix2(date.getUTCMonth() + 1)}-${prefix2(date.getUTCDate())}`;
+  const timePart = `${prefix2(date.getUTCHours())}:${prefix2(date.getUTCMinutes())}:${prefix2(date.getUTCSeconds())}.${prefix3(date.getUTCMilliseconds())}`;
+  return `${datePart} ${timePart}`;
+};
 
