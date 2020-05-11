@@ -17,10 +17,15 @@ app.use(function(req, res, next) {
   next();
 });
 
+const isEmail = (email) => /.+\@.+\..+/.test(email)
+
 app.post('/api/v1/subscribe', async (req, res) => {
     try {
         const dateString = timestampToDateString(Date.now())
         const email = req.body
+        if (!isEmail(email)) {
+          throw new Error('invalid email address: ', email)
+        }
         await subscribe(email, dateString);
         res.status(200).send('OK');
     } catch (e) {
