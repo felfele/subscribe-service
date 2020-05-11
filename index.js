@@ -5,6 +5,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const LISTEN_PORT = 3001
+const LISTEN_HOST = '127.0.0.1'
 
 const app = express();
 app.use(bodyParser.text({
@@ -34,7 +35,7 @@ app.post('/api/v1/subscribe', async (req, res) => {
     }
 });
 
-app.listen(LISTEN_PORT, () => console.log('listening on port ' + LISTEN_PORT));
+app.listen(LISTEN_PORT, LISTEN_HOST, () => console.log('listening on port ' + LISTEN_PORT));
 
 async function authorize() {
   const keysEnvVar = process.env['CREDS'];
